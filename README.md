@@ -280,11 +280,3 @@ Expected CSV structure (`hyundai_ev_restwerte.csv`):
 ## License
 
 This project is provided as-is for educational and research purposes.
-
-## Contributing
-
-Contributions are welcome! Please ensure code follows the existing structure and includes appropriate documentation.
-
-## Contact
-
-For questions or issues, please open an issue on GitHub.
