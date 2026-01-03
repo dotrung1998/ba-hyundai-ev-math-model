@@ -249,15 +249,3 @@ Contributions are welcome! Please ensure code follows the existing structure and
 ## Contact
 
 For questions or issues, please open an issue on GitHub.
-
-```
-<span style="display:none">[^1][^2][^3][^4][^5][^6]</span>
-
-<div align="center">⁂</div>
-
-[^1]: kalman_filter.py
-[^2]: bayessche_Inferenz.py
-[^3]: hyundai_ev_restwerte.py
-[^4]: main_portal_simulation.py
-[^5]: data_utils.py
-[^6]: catboost_model.py```
