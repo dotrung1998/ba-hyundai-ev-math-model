@@ -32,15 +32,6 @@ The hybrid approach reduces prediction error (MAPE) from 8.3% (linear model) to 
 
 ## Requirements
 
-```
-pandas
-numpy
-scipy
-matplotlib
-seaborn
-catboost
-```
-
 Install dependencies:
 ```bash
 pip install pandas numpy scipy matplotlib seaborn catboost
