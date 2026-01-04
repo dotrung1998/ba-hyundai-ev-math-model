@@ -63,8 +63,14 @@ This is the easiest way to copy the project to your own account so you can run a
 
 ### Step 3: Install Extensions and Dependencies
 
-1. Once inside Codespaces, open the terminal (Terminal -> New Terminal).
-2. Run the following command to install required libraries:
+1. **Install Python Extension (Important):**
+    * Once inside Codespaces, look at the left sidebar and click on the **Extensions** icon (the four squares).
+    * Search for **"Python"**.
+    * Install the official extension named **Python** (by Microsoft).
+    * *Note: This ensures proper syntax highlighting and the ability to run Python files easily.*
+2. **Install Python Libraries:**
+    * Open the terminal (Terminal -> New Terminal).
+    * Run the following command to install required libraries:
 ```bash
 pip install pandas numpy scipy matplotlib seaborn catboost
 ```
