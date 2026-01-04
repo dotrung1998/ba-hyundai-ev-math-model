@@ -45,7 +45,7 @@ pip install pandas numpy scipy matplotlib seaborn catboost
 First, generate the synthetic EV residual value dataset:
 
 ```bash
-python hyundai_ev_restwerte.py
+python src/hyundai_ev_restwerte.py
 ```
 
 This creates `hyundai_ev_restwerte.csv` with 2,000 samples of Hyundai EV data including:
@@ -59,7 +59,7 @@ This creates `hyundai_ev_restwerte.csv` with 2,000 samples of Hyundai EV data in
 Execute the full workflow:
 
 ```bash
-python main_portal_simulation.py
+python src/main_portal_simulation.py
 ```
 
 The system will:
