@@ -6,29 +6,29 @@ A hybrid machine learning system combining Kalman filtering, Bayesian inference,
 
 This project implements a three-stage prediction pipeline for electric vehicle residual values:
 
-1. **Kalman Filter (State-Space Model)**: Provides baseline predictions using time-series state-space modeling with realistic EV depreciation curves (25% year 1, 18% year 2, 12% year 3+)
-2. **Bayesian Inference**: Estimates uncertainty in depreciation rates using Metropolis-Hastings MCMC sampling
-3. **CatBoost Regression**: Corrects residuals by incorporating technical EV specifications and market factors
+1.  **Kalman Filter (State-Space Model)**: Provides baseline predictions using time-series state-space modeling with realistic EV depreciation curves (25% year 1, 18% year 2, 12% year 3+)
+2.  **Bayesian Inference**: Estimates uncertainty in depreciation rates using Metropolis-Hastings MCMC sampling
+3.  **CatBoost Regression**: Corrects residuals by incorporating technical EV specifications and market factors
 
 The hybrid approach reduces prediction error (MAPE) from 8.3% (linear model) to 2.84% (hybrid system), representing a ~66% improvement.
 
 ## Features
 
-- **Realistic EV Depreciation Modeling**: Incorporates actual EV market depreciation patterns
-- **Technical Specifications**: Considers battery size, WLTP range, energy consumption, peak power
-- **Market Factors**: Accounts for electricity prices and EV demand fluctuations
-- **Interactive Selection**: User-friendly CLI for selecting vehicle models and lease terms
-- **Statistical Validation**: Includes paired t-tests demonstrating statistical significance
-- **Visualization**: Generates plots for predictions, confidence intervals, and feature importance
+-   **Realistic EV Depreciation Modeling**: Incorporates actual EV market depreciation patterns
+-   **Technical Specifications**: Considers battery size, WLTP range, energy consumption, peak power
+-   **Market Factors**: Accounts for electricity prices and EV demand fluctuations
+-   **Interactive Selection**: User-friendly CLI for selecting vehicle models and lease terms
+-   **Statistical Validation**: Includes paired t-tests demonstrating statistical significance
+-   **Visualization**: Generates plots for predictions, confidence intervals, and feature importance
 
 ## Project Structure
 
-- **`main_portal_simulation.py`**: Main entry point orchestrating the complete prediction workflow
-- **`kalman_filter.py`**: Kalman filter implementation with Neusser (2016) state-space notation
-- **`bayessche_Inferenz.py`**: Bayesian inference module using Metropolis-Hastings algorithm
-- **`catboost_model.py`**: CatBoost regression model for residual correction
-- **`data_utils.py`**: Utility functions for data loading, selection, and test data generation
-- **`hyundai_ev_restwerte.py`**: Synthetic dataset generator for realistic EV residual values
+-   **`main_portal_simulation.py`**: Main entry point orchestrating the complete prediction workflow
+-   **`kalman_filter.py`**: Kalman filter implementation with Neusser (2016) state-space notation
+-   **`bayessche_Inferenz.py`**: Bayesian inference module using Metropolis-Hastings algorithm
+-   **`catboost_model.py`**: CatBoost regression model for residual correction
+-   **`data_utils.py`**: Utility functions for data loading, selection, and test data generation
+-   **`hyundai_ev_restwerte.py`**: Synthetic dataset generator for realistic EV residual values
 
 ## Requirements
 
@@ -38,42 +38,79 @@ pip install pandas numpy scipy matplotlib seaborn catboost
 ```
 
 
-## Usage
+## Quick Start Guide (GitHub Codespaces)
 
-### 1. Generate Dataset
+Follow these steps to run the project directly in your browser using GitHub Codespaces.
 
-First, generate the synthetic EV residual value dataset:
+### Step 1: Fork the Repository
+
+This is the easiest way to copy the project to your own account so you can run and modify it.
+
+1. Log in to your GitHub account.
+2. Go to the original repository page.
+3. Look for the **Fork** button in the top-right corner of the page and click it.
+4. On the "Create a new fork" page, ensure your account is selected as the **Owner**.
+5. Click **Create fork**.
+    * *Result: You now have an exact copy of this project under your own account (e.g., `github.com/your-username/repo-name`).*
+
+### Step 2: Launch Codespaces
+
+1. From **your forked repository** page:
+2. Click the green **Code** button.
+3. Select the **Codespaces** tab.
+4. Click **Create codespace on main**.
+5. Wait a few moments for the cloud environment to build and load VS Code in your browser.
+
+### Step 3: Install Extensions and Dependencies
+
+1. Once inside Codespaces, open the terminal (Terminal -> New Terminal).
+2. Run the following command to install required libraries:
+```bash
+pip install pandas numpy scipy matplotlib seaborn catboost
+```
+
+
+### Step 4: Generate Data \& Run
+
+Now you are ready to run the simulation.
+
+1. **Generate the dataset:**
 
 ```bash
 python src/hyundai_ev_restwerte.py
 ```
 
-This creates `hyundai_ev_restwerte.csv` with 2,000 samples of Hyundai EV data including:
-
-- Models: KONA Elektro, IONIQ 5, IONIQ 5 N, IONIQ 6
-- Features: Battery size, WLTP range/consumption, peak power, mileage, condition, market factors
-
-
-### 2. Run Complete Prediction Pipeline
-
-Execute the full workflow:
+*This creates `hyundai_ev_restwerte.csv` containing the sample data.*
+2. **Run the prediction pipeline:**
 
 ```bash
 python src/main_portal_simulation.py
 ```
 
-The system will:
+**Outputs \& Results:**
+After the code finishes running, check your project directory (file explorer on the left). You will see two new folders created automatically:
+    * **`plots/`**: This folder contains all the visualization images (PNG files) generated by the Python script (e.g., residual value curves, feature importance charts, statistical comparisons).
+    * **`catboost_info/`**: This folder contains the training logs, metadata, and temporary files automatically generated by the CatBoost model during the training process.
 
-1. Train the CatBoost model offline
-2. Prompt you to select a vehicle brand, model, and variant
-3. Ask for lease term duration (12/24/36/48/60 months)
-4. Run Kalman filter prediction
-5. Perform Bayesian inference
-6. Apply CatBoost residual correction
-7. Display final predictions with confidence intervals
-8. Show statistical validation results
+## Usage Details
 
-### 3. Run Individual Components
+When you run `python src/main_portal_simulation.py`, the system will:
+
+1. **Train the CatBoost model offline**: It processes historical data to learn market patterns.
+2. **Interactive Selection**:
+    * Prompt you to select a vehicle brand (e.g., Hyundai).
+    * Prompt for a model (e.g., IONIQ 5).
+    * Prompt for a specific variant (e.g., RWD 84kWh).
+3. **Lease Term**: Ask for lease term duration (12/24/36/48/60 months).
+4. **Process**:
+    * Run Kalman filter prediction.
+    * Perform Bayesian inference.
+    * Apply CatBoost residual correction.
+5. **Results**:
+    * Display final predictions with confidence intervals.
+    * Show statistical validation results comparing the Hybrid model vs. Linear model.
+
+### Running Individual Components
 
 **Kalman Filter only:**
 
@@ -251,7 +288,7 @@ Expected CSV structure (`hyundai_ev_restwerte.csv`):
 **Hypothesis Testing:**
 
 - Kim, T. K. (2015). T-test as a parametric statistic. *Korean Journal of Anesthesiology*, 68(6), 540-546.
-- Shier, R. (2004). *Paired t-tests*. Retrieved from https://www.statstutor.ac.uk/resources/uploaded/paired-t-test.pdf
+- Shier, R. (2004). *Paired t-tests*. Retrieved from [https://www.statstutor.ac.uk/resources/uploaded/paired-t-test.pdf](https://www.statstutor.ac.uk/resources/uploaded/paired-t-test.pdf)
 - Cohen, J. (1988). *Statistical power analysis for the behavioral sciences* (2nd ed.). Lawrence Erlbaum Associates.
 
 
@@ -259,13 +296,13 @@ Expected CSV structure (`hyundai_ev_restwerte.csv`):
 
 **EV Market Trends:**
 
-- Clean Energy Wire. (2025). Germany reports a 27 percent drop in electric car sales in 2024. Retrieved from https://energynews.pro/en/germany-reports-a-27-percent-drop-in-electric-car-sales-in-2024/
-- Mobility Portal EU. (2025). EV sales in Germany plummeted by 27%: Is it time for a new approach? Retrieved from https://mobilityportal.eu/ev-sales-in-germany-plummeted
+- Clean Energy Wire. (2025). Germany reports a 27 percent drop in electric car sales in 2024. Retrieved from [https://energynews.pro/en/germany-reports-a-27-percent-drop-in-electric-car-sales-in-2024/](https://energynews.pro/en/germany-reports-a-27-percent-drop-in-electric-car-sales-in-2024/)
+- Mobility Portal EU. (2025). EV sales in Germany plummeted by 27%: Is it time for a new approach? Retrieved from [https://mobilityportal.eu/ev-sales-in-germany-plummeted](https://mobilityportal.eu/ev-sales-in-germany-plummeted)
 
 **EV Depreciation Studies:**
 
-- eCarsTrade. (2025). EV Depreciation Rate - Do Electric cars hold their value? Retrieved from https://ecarstrade.com/blog/ev-depreciation-rate-do-electric-cars-hold-value/
-- We Buy Any Car. (2024). Electric car depreciation: An in-depth guide. Retrieved from https://www.webuyanycar.com/electric-cars/ev-depreciation
+- eCarsTrade. (2025). EV Depreciation Rate - Do Electric cars hold their value? Retrieved from [https://ecarstrade.com/blog/ev-depreciation-rate-do-electric-cars-hold-value/](https://ecarstrade.com/blog/ev-depreciation-rate-do-electric-cars-hold-value/)
+- We Buy Any Car. (2024). Electric car depreciation: An in-depth guide. Retrieved from [https://www.webuyanycar.com/electric-cars/ev-depreciation](https://www.webuyanycar.com/electric-cars/ev-depreciation)
 
 
 ## License
