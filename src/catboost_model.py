@@ -1,4 +1,5 @@
 # catboost_model.py
+
 import pandas as pd
 import numpy as np
 from catboost import CatBoostRegressor, Pool
@@ -8,13 +9,17 @@ from data_utils import load_and_select_data_interactive, choose_lease_term
 
 def train_catboost_model_for_residues(csv_file):
     """
-    Trainiert ein CatBoost-Modell für Residuen mit 2025 EV-Merkmalen.
-    Nutzt die neuen technischen Spezifikationen und Marktfaktoren.
+    DE: Trainiert ein CatBoost-Modell für Residuen mit 2025 EV-Merkmalen.
+        Nutzt die neuen technischen Spezifikationen und Marktfaktoren.
+    EN: Trains a CatBoost model for residuals with 2025 EV features.
+        Uses the new technical specifications and market factors.
     """
     df_full = pd.read_csv(csv_file)
 
-    # Simulation der SSM-Basisprognose für Trainingsdaten
-    # Realistische EV-Abwertung: 25% Jahr 1, 15% Jahr 2, 10% Jahr 3
+    # DE: Simulation der SSM-Basisprognose für Trainingsdaten
+    # EN: Simulation of the SSM baseline forecast for training data
+    # DE: Realistische EV-Abwertung: 25% Jahr 1, 15% Jahr 2, 10% Jahr 3
+    # EN: Realistic EV depreciation: 25% Year 1, 15% Year 2, 10% Year 3
     def calculate_baseline_rv(neupreis, alter_monate):
         if alter_monate <= 12:
             return neupreis * (1 - 0.25 * (alter_monate/12))
@@ -32,7 +37,8 @@ def train_catboost_model_for_residues(csv_file):
 
     df_full['residue_train'] = df_full['Restwert_EUR'] - df_full['ssm_baseline_rv_prediction_train']
 
-    # Neue Features für 2025
+    # DE: Neue Features für 2025
+    # EN: New features for 2025
     features = [
         'Marke', 'Modell', 'Variante', 'Laufleistung_km', 'Batteriegroesse_kWh',
         'Karosserieform', 'Spitzenleistung_kW', 'WLTP_Energieverbrauch_kWh_100km',
@@ -50,11 +56,12 @@ def train_catboost_model_for_residues(csv_file):
     X_train = df_full[features]
     y_train = df_full['residue_train']
 
-    # CatBoost-Modell mit optimierten Parametern für EV-Daten
+    # DE: CatBoost-Modell mit optimierten Parametern für EV-Daten
+    # EN: CatBoost model with optimized parameters for EV data
     model = CatBoostRegressor(
-        iterations=1200,  # Mehr Iterationen für komplexe EV-Daten
-        learning_rate=0.04,  # Niedrigere Lernrate für Stabilität
-        depth=9,  # Tiefere Bäume für technische Merkmale
+        iterations=1200,  # DE: Mehr Iterationen für komplexe EV-Daten / EN: More iterations for complex EV data
+        learning_rate=0.04,  # DE: Niedrigere Lernrate für Stabilität / EN: Lower learning rate for stability
+        depth=9,  # DE: Tiefere Bäume für technische Merkmale / EN: Deeper trees for technical features
         loss_function='RMSE',
         eval_metric='RMSE',
         random_seed=42,
@@ -74,22 +81,27 @@ def train_catboost_model_for_residues(csv_file):
 
 def run_catboost_prediction(catboost_model, kalman_output, selected_data, catboost_features, catboost_cat_indices, global_feature_importances):
     """
-    Führt CatBoost-Residuenkorrektur mit 2025 EV-Merkmalen durch.
+    DE: Führt CatBoost-Residuenkorrektur mit 2025 EV-Merkmalen durch.
+    EN: Performs CatBoost residual correction with 2025 EV features.
     """
     selected_model_name = selected_data["selected_model_name"]
     chosen_lease_term = kalman_output["forecast_months"]
     ssm_baseline_rv_prediction = kalman_output["ssm_baseline_rv_prediction"]
 
-    # Vorbereitung der 2025 EV-Features für CatBoost
+    # DE: Vorbereitung der 2025 EV-Features für CatBoost
+    # EN: Preparing 2025 EV features for CatBoost
     X_predict = pd.DataFrame([selected_data["full_row_data"][catboost_features].values], columns=catboost_features)
 
-    # Residuum-Vorhersage
+    # DE: Residuum-Vorhersage
+    # EN: Residual prediction
     residue_prediction = catboost_model.predict(X_predict)[0]
 
-    # Finale Restwertberechnung
+    # DE: Finale Restwertberechnung
+    # EN: Final residual value calculation
     final_predicted_rv = ssm_baseline_rv_prediction + residue_prediction
 
-    # Ergebnisse für HCBE
+    # DE: Ergebnisse für HCBE
+    # EN: Results for HCBE
     print("\n--- 3. Schritt: CatBoost Residuen-Korrektur mit 2025 EV-Merkmalen ---")
     print(f"Fahrzeug: {selected_model_name}")
     print(f"Laufzeit: {chosen_lease_term} Monate")
@@ -97,12 +109,14 @@ def run_catboost_prediction(catboost_model, kalman_output, selected_data, catboo
     print(f"Korrektur durch 2025 EV-Faktoren (CatBoost): {residue_prediction:.2f} €")
     print(f"--> Finaler prognostizierter Restwert: {final_predicted_rv:.2f} €")
 
-    # Feature Importances für 2025 EV-Merkmale
+    # DE: Feature Importances für 2025 EV-Merkmale
+    # EN: Feature importances for 2025 EV features
     feature_names = catboost_features
     importance_df = pd.DataFrame({'Feature': feature_names, 'Importance': global_feature_importances})
     importance_df = importance_df.sort_values(by='Importance', ascending=False)
 
-    # Mapping der Feature-Namen für bessere Darstellung
+    # DE: Mapping der Feature-Namen für bessere Darstellung
+    # EN: Mapping feature names for better display
     feature_display_names = {
         'Spitzenleistung_kW': 'Spitzenleistung (kW)',
         'WLTP_Energieverbrauch_kWh_100km': 'WLTP Verbrauch (kWh/100km)',
@@ -126,16 +140,17 @@ def run_catboost_prediction(catboost_model, kalman_output, selected_data, catboo
     sns.barplot(data=importance_df.head(10),
                x='Importance',
                y='Feature_Display',
-               hue='Feature_Display',  # Explizite hue-Zuweisung
+               hue='Feature_Display',  # DE: Explizite hue-Zuweisung / EN: Explicit hue assignment
                palette='viridis',
-               legend=False)           # Legende unterdrücken
+               legend=False)           # DE: Legende unterdrücken / EN: Suppress legend
     plt.title(f"Top 10 Einflussfaktoren der 2025 EV-Residuen-Korrektur\n{selected_model_name} (Laufzeit {chosen_lease_term} Monate)")
     plt.xlabel('Wichtigkeit (CatBoost Feature Importance)')
     plt.ylabel('2025 EV-Merkmal')
     plt.tight_layout()
     plt.show()
 
-    # Zusätzliche Analyse der technischen Merkmale
+    # DE: Zusätzliche Analyse der technischen Merkmale
+    # EN: Additional analysis of technical features
     print("\n--- Analyse der technischen 2025 EV-Merkmale ---")
     row_data = selected_data["full_row_data"]
     print(f"Spitzenleistung: {row_data['Spitzenleistung_kW']:.0f} kW")
@@ -149,16 +164,19 @@ def run_catboost_prediction(catboost_model, kalman_output, selected_data, catboo
 if __name__ == "__main__":
     csv_path = "hyundai_ev_restwerte_2025_aktualisiert.csv"
 
-    # Offline-Phase: CatBoost-Modell für 2025 EV-Daten trainieren
+    # DE: Offline-Phase: CatBoost-Modell für 2025 EV-Daten trainieren
+    # EN: Offline phase: Train CatBoost model for 2025 EV data
     trained_catboost_model, catboost_features, catboost_cat_indices, global_feature_importances = train_catboost_model_for_residues(csv_path)
 
-    # Simulation der Online-Anfrage
+    # DE: Simulation der Online-Anfrage
+    # EN: Simulation of the online request
     print("\n--- Simulation der Online-Anfrage mit 2025 EV-Daten ---")
     selected_data_for_test = load_and_select_data_interactive(csv_path)
     if selected_data_for_test:
         chosen_term_for_test = choose_lease_term()
 
-        # Simulierter Kalman-Output für Test
+        # DE: Simulierter Kalman-Output für Test
+        # EN: Simulated Kalman output for test
         simulated_kalman_output = {
             "ssm_baseline_rv_prediction": selected_data_for_test["initial_rv"] * (1 - 0.021 * chosen_term_for_test),
             "forecast_months": chosen_term_for_test,

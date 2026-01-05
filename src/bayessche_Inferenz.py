@@ -1,4 +1,4 @@
-# bayesian_inference.py
+# bayessche_Inferenz.py
 
 import pandas as pd
 import numpy as np
@@ -8,18 +8,21 @@ from data_utils import load_and_select_data_interactive, choose_lease_term
 
 def calculate_prior_parameters(selected_data):
     """
-    Prior-Parameter mit 25% EV-Abwertung
+    DE: Prior-Parameter mit 25% EV-Abwertung
+    EN: Prior parameters with 25% EV depreciation
     """
     initial_rv = selected_data["initial_rv"]
     age_months = selected_data["age_months"]
     observed_rv = selected_data["true_residual_value_at_horizon"]
 
     if age_months == 0 or initial_rv <= observed_rv:
-        # Annahme: ca. 25% Wertverlust im ersten Jahr
-        prior_mean_beta = initial_rv * 0.0225  # 25% jährlich = 2.10% monatlich
-        prior_std_beta = initial_rv * 0.006  # 0.6% vom Neupreis als Variabilität
+        # DE: Annahme: ca. 25% Wertverlust im ersten Jahr
+        # EN: Assumption: approx. 25% value loss in the first year
+        prior_mean_beta = initial_rv * 0.0225  # DE: 25% jährlich = 2.10% monatlich / EN: 25% annually = 2.10% monthly
+        prior_std_beta = initial_rv * 0.006  # DE: 0.6% vom Neupreis als Variabilität / EN: 0.6% of the new price as variability
     else:
-        # Durchschnittliche monatliche Abwertungsrate
+        # DE: Durchschnittliche monatliche Abwertungsrate
+        # EN: Average monthly depreciation rate
         if age_months <= 12:
             expected_loss = initial_rv * 0.25 * (age_months/12)
         elif age_months <= 24:
@@ -44,15 +47,18 @@ def calculate_prior_parameters(selected_data):
 
 def likelihood(params, data_initial_rv, data_age_months, data_observed_rv, sigma_obs):
     """
-    Likelihood-Funktion mit realistischen EV-Parametern
+    DE: Likelihood-Funktion mit realistischen EV-Parametern
+    EN: Likelihood function with realistic EV parameters
     """
     beta = params[0]
 
-    # Vorhersage basierend auf 25% Abwertungsmodell
+    # DE: Vorhersage basierend auf 25% Abwertungsmodell
+    # EN: Prediction based on 25% depreciation model
     if data_age_months <= 12:
         predicted_rv = data_initial_rv * (1 - 0.25 * beta * (data_age_months/12) / (data_initial_rv * 0.25/12))
     else:
-        # Vereinfachte lineare Approximation für längere Zeiträume
+        # DE: Vereinfachte lineare Approximation für längere Zeiträume
+        # EN: Simplified linear approximation for longer periods
         predicted_rv = data_initial_rv - beta * data_age_months
 
     predicted_rv = np.maximum(0, predicted_rv)
@@ -61,17 +67,20 @@ def likelihood(params, data_initial_rv, data_age_months, data_observed_rv, sigma
 
 def run_bayesian_inference(selected_data):
     """
-    Bayesianische Inferenz
+    DE: Bayesianische Inferenz
+    EN: Bayesian Inference
     """
     data_initial_rv = selected_data["initial_rv"]
     data_age_months = selected_data["age_months"]
     data_observed_rv = selected_data["true_residual_value_at_horizon"]
     selected_model_name = selected_data["selected_model_name"]
 
-    # Messrauschen für EV-Markt
-    sigma_obs = 750  # Konsistent mit Kalman-Filter
+    # DE: Messrauschen für EV-Markt
+    # EN: Measurement noise for EV market
+    sigma_obs = 750  # DE: Konsistent mit Kalman-Filter / EN: Consistent with Kalman Filter
 
-    # Korrigierte Prior-Parameter
+    # DE: Korrigierte Prior-Parameter
+    # EN: Corrected prior parameters
     prior_mean_beta, prior_std_beta = calculate_prior_parameters(selected_data)
 
     print(f"\n--- Bayesianische Inferenz ---")
@@ -92,7 +101,8 @@ def run_bayesian_inference(selected_data):
             return -np.inf
         return log_likelihood + log_prior
 
-    # Metropolis-Hastings Implementation
+    # DE: Metropolis-Hastings Implementation
+    # EN: Metropolis-Hastings implementation
     def metropolis_hastings(initial_params, n_iterations=50000, proposal_std=25):
         chain = [initial_params]
         current_params = np.array(initial_params)
@@ -114,16 +124,19 @@ def run_bayesian_inference(selected_data):
 
         return np.array(chain)
 
-    # MCMC-Sampling
+    # DE: MCMC-Sampling
+    # EN: MCMC Sampling
     initial_params = [prior_mean_beta]
     mcmc_chain = metropolis_hastings(initial_params)
 
-    # Ergebnisse analysieren
+    # DE: Ergebnisse analysieren
+    # EN: Analyze results
     burn_in = int(0.2 * len(mcmc_chain))
     thinned_chain = mcmc_chain[burn_in::10]
     beta_samples = thinned_chain[:, 0]
 
-    # Visualisierung
+    # DE: Visualisierung
+    # EN: Visualization
     plt.figure(figsize=(10, 6))
     plt.hist(beta_samples, bins=50, color="skyblue", density=True, alpha=0.7, label="Korrigierte Posterior")
     plt.axvline(np.mean(beta_samples), color="red", linestyle="--", label=f"Mittelwert: {np.mean(beta_samples):.2f}")

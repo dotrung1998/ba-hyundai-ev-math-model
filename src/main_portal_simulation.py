@@ -9,17 +9,20 @@ from pathlib import Path
 import datetime
 import re
 
-# Lokale Module importieren
+# EN: Import local modules
+# DE: Lokale Module importieren
 from data_utils import load_and_select_data_interactive, choose_lease_term
 from kalman_filter import run_kalman_filter
 from bayessche_Inferenz import run_bayesian_inference
 from catboost_model import train_catboost_model_for_residues, run_catboost_prediction
 
-# --- Hilfsfunktionen zum Speichern der Plots ---
+# --- EN: Helper functions for saving plots ---
+# --- DE: Hilfsfunktionen zum Speichern der Plots ---
 
 def _safe_filename(s: str) -> str:
     """
-    Wandelt einen String in einen sicheren Dateinamen um.
+    EN: Converts a string into a safe filename.
+    DE: Wandelt einen String in einen sicheren Dateinamen um.
     """
     s = str(s).strip().replace(' ', '_')
     s = re.sub(r'(?u)[^-\w.]', '', s)
@@ -27,67 +30,87 @@ def _safe_filename(s: str) -> str:
 
 def enable_auto_save_plots(output_dir: Path, run_tag: str):
     """
-    Monkey-Patching von plt.show() zum automatischen Speichern der aktiven Abbildungen
-    in das output_dir, bevor sie angezeigt werden.
+    EN: Monkey-patching plt.show() to automatically save active figures 
+        to output_dir before they are displayed.
+    DE: Monkey-Patching von plt.show() zum automatischen Speichern der aktiven Abbildungen
+        in das output_dir, bevor sie angezeigt werden.
     """
     if not output_dir.exists():
         output_dir.mkdir(parents=True, exist_ok=True)
 
-    # WICHTIG: Alle existierenden, leeren Figures schließen, um "Plot01 (leer)" zu vermeiden
+    # EN: IMPORTANT: Close all existing, empty figures to avoid "Plot01 (empty)"
+    # DE: WICHTIG: Alle existierenden, leeren Figures schließen, um "Plot01 (leer)" zu vermeiden
     plt.close('all')
 
     original_show = plt.show
+    # EN: Use a dictionary to keep the counter mutable in the closure
+    # DE: Verwenden eines Dictionarys, um den Zähler im Closure veränderbar zu halten
     state = {"count": 0, "saved_figs": set()}
 
     def wrapped_show(*args, **kwargs):
+        # EN: Get all active figure numbers
+        # DE: Alle aktiven Figure-Nummern abrufen
         fignums = plt.get_fignums()
         
         for fignum in fignums:
             if fignum not in state["saved_figs"]:
                 fig = plt.figure(fignum)
                 
-                # FIX: Überspringe leere Figures (ohne Achsen/Inhalt)
+                # EN: FIX: Skip empty figures (without axes/content)
+                # DE: FIX: Überspringe leere Figures (ohne Achsen/Inhalt)
                 if not fig.axes:
                     continue
 
                 state["count"] += 1
                 
-                # Dateinamen erstellen: YYYYMMDD_HHMM_Tag_Plot01.png
+                # EN: Create filename: YYYYMMDD_HHMM_Tag_Plot01.png
+                # DE: Dateinamen erstellen: YYYYMMDD_HHMM_Tag_Plot01.png
                 filename = f"{run_tag}_Plot{state['count']:02d}.png"
                 filepath = output_dir / filename
                 
                 try:
                     fig.savefig(filepath, dpi=150, bbox_inches='tight')
-                    print(f"[Auto-Save] Diagramm gespeichert: {filepath}")
+                    print(f"[Auto-Save] EN: Chart saved: {filepath}")
+                    print(f"[Auto-Save] DE: Diagramm gespeichert: {filepath}")
                     state["saved_figs"].add(fignum)
                 except Exception as e:
-                    print(f"[Auto-Save] Fehler beim Speichern von Diagramm {fignum}: {e}")
+                    print(f"[Auto-Save] EN: Error saving chart {fignum}: {e}")
+                    print(f"[Auto-Save] DE: Fehler beim Speichern von Diagramm {fignum}: {e}")
 
+        # EN: Call the original show function
+        # DE: Die ursprüngliche show-Funktion aufrufen
         return original_show(*args, **kwargs)
 
     plt.show = wrapped_show
-    print(f"--> Modus zum automatischen Speichern der Diagramme aktiviert in: {output_dir}")
+    print(f"--> EN: Auto-save mode for charts activated in: {output_dir}")
+    print(f"--> DE: Modus zum automatischen Speichern der Diagramme aktiviert in: {output_dir}")
 
-# --- Hauptworkflow ---
+# --- EN: Main Workflow ---
+# --- DE: Hauptworkflow ---
 
 def main_portal_workflow(csv_file):
     """
-    Hauptworkflow der Simulation.
+    EN: Main simulation workflow.
+    DE: Hauptworkflow der Simulation.
     """
     print("Implementierung: Neusser (2016) State-Space-Notation + realistische EV-Parameter")
 
-    # Offline-Phase: CatBoost-Modell trainieren
+    # EN: Offline Phase: Train CatBoost model
+    # DE: Offline-Phase: CatBoost-Modell trainieren
     print("\n--- Initialisiere CatBoost Modell ---")
-    # Hinweis: Sicherstellen, dass die Train-Funktion genau 4 Werte zurückgibt
+    # EN: Note: Ensure that the train function returns exactly 4 values
+    # DE: Hinweis: Sicherstellen, dass die Train-Funktion genau 4 Werte zurückgibt
     trained_catboost_model, catboost_features, catboost_cat_indices, global_feature_importances = train_catboost_model_for_residues(csv_file)
 
-    # 1. Benutzerauswahl (Fahrzeug)
+    # 1. EN: User Selection (Vehicle)
+    # 1. DE: Benutzerauswahl (Fahrzeug)
     selected_data_initial = load_and_select_data_interactive(csv_file)
     if not selected_data_initial:
         print("Fehler bei der Datenauswahl.")
         return
 
-    # Wähle zufälligen, passenden Datensatz aus und stelle Skalarwerte sicher
+    # EN: Select a random, matching dataset and ensure scalar values
+    # DE: Wähle zufälligen, passenden Datensatz aus und stelle Skalarwerte sicher
     df_full = pd.read_csv(csv_file)
     base_row = selected_data_initial["full_row_data"]
 
@@ -101,10 +124,12 @@ def main_portal_workflow(csv_file):
     
     selected_data = None
     if not matching_df.empty:
-        # Wähle eine zufällige Zeile als Series aus
+        # EN: Select a random row as Series
+        # DE: Wähle eine zufällige Zeile als Series aus
         random_row_series = matching_df.sample(n=1).iloc[0]
 
-        # Extrahiere die Werte direkt aus der Series und konvertiere zu Python-Skalaren mit .item()
+        # EN: Extract values directly from the Series and convert to Python scalars using .item()
+        # DE: Extrahiere die Werte direkt aus der Series und konvertiere zu Python-Skalaren mit .item()
         initial_rv = random_row_series["Neupreis_EUR"].item() if hasattr(random_row_series["Neupreis_EUR"], 'item') else random_row_series["Neupreis_EUR"]
         age_months = random_row_series["Alter_Monate"].item() if hasattr(random_row_series["Alter_Monate"], 'item') else random_row_series["Alter_Monate"]
         observed_rv = random_row_series["Restwert_EUR"].item() if hasattr(random_row_series["Restwert_EUR"], 'item') else random_row_series["Restwert_EUR"]
@@ -116,7 +141,7 @@ def main_portal_workflow(csv_file):
             "age_months": age_months,
             "true_residual_value_at_horizon": observed_rv,
             "selected_model_name": selected_model_name,
-            "full_row_data": random_row_series, # Die ganze Zeile als Series
+            "full_row_data": random_row_series, # EN: The entire row as Series / DE: Die ganze Zeile als Series
         }
 
         try:
@@ -128,19 +153,22 @@ def main_portal_workflow(csv_file):
         print("Keine passenden Datensätze gefunden; benutze ausgewählten Eintrag.")
         selected_data = selected_data_initial
 
-    # 2. Benutzerauswahl (Laufzeit)
+    # 2. EN: User Selection (Lease Term)
+    # 2. DE: Benutzerauswahl (Laufzeit)
     chosen_lease_term = choose_lease_term()
     if not chosen_lease_term:
         print("Fehler bei der Laufzeitauswahl.")
         return
 
     # ==============================================================================
-    # AKTIVIERUNG DER AUTOMATISCHEN SPEICHERUNG DER DIAGRAMME HIER (Nach Benutzerauswahl)
+    # EN: ACTIVATE AUTO-SAVE FOR PLOTS HERE (After User Selection)
+    # DE: AKTIVIERUNG DER AUTOMATISCHEN SPEICHERUNG DER DIAGRAMME HIER (Nach Benutzerauswahl)
     # ==============================================================================
-    current_dir = Path.cwd()          # Aktuelles Verzeichnis (src)
-    plots_dir = current_dir / "plots" # Speichern im Unterverzeichnis 'plots'
+    current_dir = Path.cwd()          # EN: Current directory (src) / DE: Aktuelles Verzeichnis (src)
+    plots_dir = current_dir / "plots" # EN: Save in 'plots' subdirectory / DE: Speichern im Unterverzeichnis 'plots'
     
-    # Erstellen eines Dateinamen-Tags: YYYYMMDD_HHMM_Modellname_Laufzeit
+    # EN: Create filename tag: YYYYMMDD_HHMM_ModelName_Term
+    # DE: Erstellen eines Dateinamen-Tags: YYYYMMDD_HHMM_Modellname_Laufzeit
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M")
     safe_model_name = _safe_filename(selected_data['selected_model_name'])
     run_tag = f"{timestamp}_{safe_model_name}_{chosen_lease_term}m"
@@ -152,13 +180,16 @@ def main_portal_workflow(csv_file):
     print(f"Fahrzeug: {selected_data['selected_model_name']}")
     print(f"Laufzeit: {chosen_lease_term} Monate")
 
-    # 1. Kalman-Filterung
+    # 1. EN: Kalman Filtering
+    # 1. DE: Kalman-Filterung
     kalman_output = run_kalman_filter(selected_data, chosen_lease_term)
 
-    # 2. Bayesianische Inferenz
+    # 2. EN: Bayesian Inference
+    # 2. DE: Bayesianische Inferenz
     bayesian_output = run_bayesian_inference(selected_data)
 
-    # 3. CatBoost-Residuenkorrektur
+    # 3. EN: CatBoost Residual Correction
+    # 3. DE: CatBoost-Residuenkorrektur
     final_predicted_rv = None
     if kalman_output:
         final_predicted_rv = run_catboost_prediction(
@@ -172,32 +203,38 @@ def main_portal_workflow(csv_file):
     else:
         print("Kalman-Filter-Output nicht verfügbar.")
 
-    # Finale Ratenkalkulation
+    # EN: Final Rate Calculation
+    # DE: Finale Ratenkalkulation
     print(f"\n--- EV-Finanzierungsberechnung ---")
     
     if final_predicted_rv is not None:
         initial_rv = selected_data["initial_rv"]
         
-        # EV-Finanzierungsparameter für 2024/25
-        annual_interest_rate = 0.038  # 3.8% Jahreszins (höher wegen EV-Volatilität)
+        # EN: EV financing parameters for 2024/25
+        # DE: EV-Finanzierungsparameter für 2024/25
+        annual_interest_rate = 0.038  # EN: 3.8% annual interest (higher due to EV volatility) / DE: 3.8% Jahreszins (höher wegen EV-Volatilität)
         monthly_interest_rate = annual_interest_rate / 12
         
-        # Abschreibung
+        # EN: Depreciation
+        # DE: Abschreibung
         depreciation_per_month = (initial_rv - final_predicted_rv) / chosen_lease_term
         
-        # EV-spezifische Risikoanpassung
+        # EN: EV-specific risk adjustment
+        # DE: EV-spezifische Risikoanpassung
         row_data = selected_data["full_row_data"]
         risk_factor = 1.0
         
-        if kalman_output["wertverlust_prozent"] > 30: # Hoher Wertverlust
+        if kalman_output["wertverlust_prozent"] > 30: # EN: High depreciation / DE: Hoher Wertverlust
             risk_factor += 0.05
             
-        # Sicherheitsprüfung für fehlende Spalten
+        # EN: Safety check for missing columns
+        # DE: Sicherheitsprüfung für fehlende Spalten
         wltp_range = row_data.get('WLTP_Elektrische_Reichweite_km', 400)
-        if wltp_range < 300: # Niedrige Reichweite
+        if wltp_range < 300: # EN: Low range / DE: Niedrige Reichweite
             risk_factor += 0.03
 
-        # Ratenberechnung
+        # EN: Rate calculation
+        # DE: Ratenberechnung
         base_monthly_rate = depreciation_per_month + (initial_rv + final_predicted_rv) / 2 * monthly_interest_rate
         estimated_monthly_rate = base_monthly_rate * risk_factor
 
@@ -210,32 +247,38 @@ def main_portal_workflow(csv_file):
         print(f"Monatliche Rate: {estimated_monthly_rate:.2f} €")
         print(f"Konfidenzintervall Restwert: ±{kalman_output['confidence_interval']:.2f} €")
 
-    # Statistische Validierung
+    # EN: Statistical Validation
+    # DE: Statistische Validierung
     run_corrected_validation(csv_file, trained_catboost_model, catboost_features, catboost_cat_indices)
-
 
 def run_corrected_validation(csv_file, trained_catboost_model, catboost_features, catboost_cat_indices):
     """
-    Statistische Validierung mit realistischen MAPE-Werten.
+    EN: Statistical validation with realistic MAPE values.
+    DE: Statistische Validierung mit realistischen MAPE-Werten.
     """
     print(f"\n--- Statistische Validierung ---")
     
     num_test_cases = 400
     
-    # Simulierte Leistungsmetriken (realistischere Werte)
+    # EN: Simulated performance metrics (more realistic values)
+    # DE: Simulierte Leistungsmetriken (realistischere Werte)
     simulated_actual_rv = np.random.normal(loc=30000, scale=4000, size=num_test_cases)
     
-    # Lineare Abschreibung: 8.3% MAPE
+    # EN: Linear depreciation: 8.3% MAPE
+    # DE: Lineare Abschreibung: 8.3% MAPE
     simulated_linear_predictions = simulated_actual_rv * (1 - np.random.normal(loc=0.083, scale=0.025, size=num_test_cases))
     
-    # Hybrides System: 2.84% MAPE
+    # EN: Hybrid system: 2.84% MAPE
+    # DE: Hybrides System: 2.84% MAPE
     simulated_hybrid_predictions = simulated_actual_rv * (1 - np.random.normal(loc=0.0284, scale=0.008, size=num_test_cases))
 
-    # MAPE-Berechnung
+    # EN: MAPE calculation
+    # DE: MAPE-Berechnung
     mape_linear_all_cases = np.abs((simulated_actual_rv - simulated_linear_predictions) / simulated_actual_rv) * 100
     mape_hybrid_all_cases = np.abs((simulated_actual_rv - simulated_hybrid_predictions) / simulated_actual_rv) * 100
     
-    # RMSE-Berechnung
+    # EN: RMSE calculation
+    # DE: RMSE-Berechnung
     rmse_linear = np.sqrt(np.mean((simulated_actual_rv - simulated_linear_predictions)**2))
     rmse_hybrid = np.sqrt(np.mean((simulated_actual_rv - simulated_hybrid_predictions)**2))
 
@@ -246,7 +289,8 @@ def run_corrected_validation(csv_file, trained_catboost_model, catboost_features
     improvement = ((np.mean(mape_linear_all_cases) - np.mean(mape_hybrid_all_cases)) / np.mean(mape_linear_all_cases) * 100)
     print(f"Verbesserung: {improvement:.1f}%")
 
-    # t-Test
+    # EN: t-Test
+    # DE: t-Test
     t_statistic, p_value = stats.ttest_rel(mape_linear_all_cases, mape_hybrid_all_cases, alternative='greater')
     
     print(f"\n--- Statistische Signifikanz ---")
@@ -261,6 +305,7 @@ def run_corrected_validation(csv_file, trained_catboost_model, catboost_features
         print("✗ Keine statistische Signifikanz nachweisbar")
 
 if __name__ == "__main__":
-    # Pfad zur CSV-Datei sicherstellen
+    # EN: Ensure CSV file path
+    # DE: Pfad zur CSV-Datei sicherstellen
     csv_file_path = "src/hyundai_ev_restwerte.csv"
     main_portal_workflow(csv_file_path)

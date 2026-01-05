@@ -1,3 +1,5 @@
+# hyundai_ev_restwerte.py
+
 import pandas as pd
 import numpy as np
 import random
@@ -5,21 +7,25 @@ from datetime import datetime, timedelta
 
 def generate_realistic_ev_data_2025(num_samples=2000):
     """
-    Generiert realistische EV-Restwertdaten basierend auf 2025 Marktdaten
-    mit aktualisierten Merkmalen: Karosserieform, Spitzenleistung, WLTP-Verbrauch,
-    WLTP-Reichweite und Elektropreis-Marktfaktoren
+    DE: Generiert realistische EV-Restwertdaten basierend auf 2025 Marktdaten
+        mit aktualisierten Merkmalen: Karosserieform, Spitzenleistung, WLTP-Verbrauch,
+        WLTP-Reichweite und Elektropreis-Marktfaktoren
+    EN: Generates realistic EV residual value data based on 2025 market data
+        with updated features: Body style, Peak power, WLTP consumption,
+        WLTP range, and Electricity price market factors
     """
 
-    # Aktualisierte Hyundai EV-Modelle mit 2025 Spezifikationen
+    # DE: Aktualisierte Hyundai EV-Modelle mit 2025 Spezifikationen
+    # EN: Updated Hyundai EV models with 2025 specifications
     modelle_details = {
         "Hyundai": {
             "KONA Elektro": {
                 "Varianten": ["Standard Range 49kWh", "Long Range 65kWh"],
                 "Neupreise": [35990, 42990],
                 "Batterien": [49, 65],
-                "Spitzenleistung_kW": [99, 150],  # 133 HP und 201 HP [12][13]
-                "WLTP_Verbrauch_kWh_100km": [13.8, 13.4],  # Basiert auf Marktdaten [20]
-                "WLTP_Reichweite_km": [320, 480],  # WLTP-Reichweiten [14]
+                "Spitzenleistung_kW": [99, 150],  # 133 HP and 201 HP [12][13]
+                "WLTP_Verbrauch_kWh_100km": [13.8, 13.4],  # Based on market data [20]
+                "WLTP_Reichweite_km": [320, 480],  # WLTP ranges [14]
                 "Karosserieform": "SUV",
                 "Wertverlust_Faktor": 0.28
             },
@@ -28,8 +34,8 @@ def generate_realistic_ev_data_2025(num_samples=2000):
                 "Neupreise": [47900, 52900, 57900],
                 "Batterien": [58, 84, 84],
                 "Spitzenleistung_kW": [125, 168, 239],  # 168 HP RWD, 320 HP AWD [2][5]
-                "WLTP_Verbrauch_kWh_100km": [16.8, 17.1, 18.2],  # SUV-typischer Verbrauch
-                "WLTP_Reichweite_km": [345, 490, 460],  # Bis zu 354 Meilen = 570km [3][4]
+                "WLTP_Verbrauch_kWh_100km": [16.8, 17.1, 18.2],  # Typical SUV consumption
+                "WLTP_Reichweite_km": [345, 490, 460],  # Up to 354 miles = 570km [3][4]
                 "Karosserieform": "SUV",
                 "Wertverlust_Faktor": 0.248
             },
@@ -37,9 +43,9 @@ def generate_realistic_ev_data_2025(num_samples=2000):
                 "Varianten": ["Performance 84kWh"],
                 "Neupreise": [74900],
                 "Batterien": [84],
-                "Spitzenleistung_kW": [448],  # 601 HP mit Boost [6]
-                "WLTP_Verbrauch_kWh_100km": [22.5],  # Performance-Modell höherer Verbrauch
-                "WLTP_Reichweite_km": [355],  # 221 Meilen EPA ≈ 355 km [6]
+                "Spitzenleistung_kW": [448],  # 601 HP with Boost [6]
+                "WLTP_Verbrauch_kWh_100km": [22.5],  # Performance model higher consumption
+                "WLTP_Reichweite_km": [355],  # 221 miles EPA ≈ 355 km [6]
                 "Karosserieform": "SUV",
                 "Wertverlust_Faktor": 0.246
             },
@@ -47,9 +53,9 @@ def generate_realistic_ev_data_2025(num_samples=2000):
                 "Varianten": ["Standard Range 53kWh", "Long Range 77kWh"],
                 "Neupreise": [49900, 54900],
                 "Batterien": [53, 77],
-                "Spitzenleistung_kW": [111, 168],  # 149 HP und 228 HP [16][19]
-                "WLTP_Verbrauch_kWh_100km": [13.9, 14.3],  # Sehr effiziente Limousine [21]
-                "WLTP_Reichweite_km": [385, 540],  # 240 und 316 Meilen [16]
+                "Spitzenleistung_kW": [111, 168],  # 149 HP and 228 HP [16][19]
+                "WLTP_Verbrauch_kWh_100km": [13.9, 14.3],  # Very efficient sedan [21]
+                "WLTP_Reichweite_km": [385, 540],  # 240 and 316 miles [16]
                 "Karosserieform": "Limousine",
                 "Wertverlust_Faktor": 0.26
             },
@@ -59,11 +65,12 @@ def generate_realistic_ev_data_2025(num_samples=2000):
     farben = ["Schwarz", "Weiß", "Blau", "Rot", "Grau", "Silber", "Grün", "Orange"]
     regionen = ["DE-Nord", "DE-Süd", "DE-Ost", "DE-West", "DE-Mitte"]
 
-    # Marktfaktoren für Elektropreis basierend auf 2025 Prognosen [22][25]
+    # DE: Marktfaktoren für Elektropreis basierend auf 2025 Prognosen [22][25]
+    # EN: Market factors for electricity price based on 2025 forecasts [22][25]
     marktfaktoren_elektropreis = {
-        "niedrig": 1.05,    # Niedrige Strompreise begünstigen EV-Nachfrage
+        "niedrig": 1.05,    # DE: Niedrige Strompreise begünstigen EV-Nachfrage / EN: Low electricity prices favor EV demand
         "mittel": 1.0,      # Baseline
-        "hoch": 0.96        # Hohe Strompreise reduzieren EV-Attraktivität
+        "hoch": 0.96        # DE: Hohe Strompreise reduzieren EV-Attraktivität / EN: High electricity prices reduce EV attractiveness
     }
     marktfaktoren_nachfrage = {"schwach": 0.90, "mittel": 1.0, "stark": 1.08}
 
@@ -72,10 +79,12 @@ def generate_realistic_ev_data_2025(num_samples=2000):
                                              karosserieform, zustand, elektropreis_faktor,
                                              nachfrage_faktor, wertverlust_faktor):
         """
-        Erweiterte Restwertberechnung mit neuen technischen Merkmalen
+        DE: Erweiterte Restwertberechnung mit neuen technischen Merkmalen
+        EN: Extended residual value calculation with new technical features
         """
 
-        # Basis-Wertverlustkurve
+        # DE: Basis-Wertverlustkurve
+        # EN: Base depreciation curve
         alter_jahre = alter_monate / 12.0
 
         if alter_jahre <= 1:
@@ -90,7 +99,8 @@ def generate_realistic_ev_data_2025(num_samples=2000):
         basis_wertverlust = basis_wertverlust * wertverlust_faktor * 2
         simulierter_wert = neupreis * (1 - basis_wertverlust)
 
-        # Laufleistungseffekt (EV-spezifisch: 12.215 km/Jahr Durchschnitt)
+        # DE: Laufleistungseffekt (EV-spezifisch: 12.215 km/Jahr Durchschnitt)
+        # EN: Mileage effect (EV-specific: 12,215 km/year average)
         durchschnitt_km_pro_jahr = 12215
         erwartete_laufleistung = (alter_monate / 12) * durchschnitt_km_pro_jahr
         laufleistung_abweichung = laufleistung_km - erwartete_laufleistung
@@ -100,53 +110,61 @@ def generate_realistic_ev_data_2025(num_samples=2000):
         else:
             simulierter_wert += min(abs(laufleistung_abweichung) * 0.04, neupreis * 0.05)
 
-        # Spitzenleistung: Bonus für hohe Leistung
+        # DE: Spitzenleistung: Bonus für hohe Leistung
+        # EN: Peak power: Bonus for high performance
         if spitzenleistung_kw > 200:
-            simulierter_wert += 2500  # Performance-Bonus
+            simulierter_wert += 2500  # DE: Performance-Bonus / EN: Performance Bonus
         elif spitzenleistung_kw > 150:
             simulierter_wert += 1500
         elif spitzenleistung_kw < 100:
-            simulierter_wert -= 1000  # Abzug für niedrige Leistung
+            simulierter_wert -= 1000  # DE: Abzug für niedrige Leistung / EN: Deduction for low power
 
-        # WLTP Energieverbrauch: Effizienz-Bonus/Malus [20][21]
-        if wltp_verbrauch < 14.0:  # Sehr effizient
+        # DE: WLTP Energieverbrauch: Effizienz-Bonus/Malus [20][21]
+        # EN: WLTP Energy consumption: Efficiency Bonus/Malus [20][21]
+        if wltp_verbrauch < 14.0:  # DE: Sehr effizient / EN: Very efficient
             simulierter_wert += 1800
-        elif wltp_verbrauch < 16.0:  # Durchschnittlich effizient
+        elif wltp_verbrauch < 16.0:  # DE: Durchschnittlich effizient / EN: Average efficiency
             simulierter_wert += 800
-        elif wltp_verbrauch > 20.0:  # Ineffizient
+        elif wltp_verbrauch > 20.0:  # DE: Ineffizient / EN: Inefficient
             simulierter_wert -= 1200
 
-        # WLTP Reichweite: Reichweiten-Premium [9]
-        if wltp_reichweite > 500:  # Über 500km = Premium
+        # DE: WLTP Reichweite: Reichweiten-Premium [9]
+        # EN: WLTP Range: Range Premium [9]
+        if wltp_reichweite > 500:  # DE: Über 500km = Premium / EN: Over 500km = Premium
             simulierter_wert += 2200
-        elif wltp_reichweite > 400:  # Über 400km = gut
+        elif wltp_reichweite > 400:  # DE: Über 400km = gut / EN: Over 400km = good
             simulierter_wert += 1200
-        elif wltp_reichweite < 300:  # Unter 300km = Abzug
+        elif wltp_reichweite < 300:  # DE: Unter 300km = Abzug / EN: Under 300km = deduction
             simulierter_wert -= 1500
 
-        # Karosserieform-Faktoren [23][24]
+        # DE: Karosserieform-Faktoren [23][24]
+        # EN: Body style factors [23][24]
         karosserieform_faktoren = {
-            "SUV": 1.08,        # SUVs sind beliebt
-            "Limousine": 1.02,  # Limousinen stabil
-            "Kleinwagen": 0.95  # Kleinwagen weniger wertstabil
+            "SUV": 1.08,        # DE: SUVs sind beliebt / EN: SUVs are popular
+            "Limousine": 1.02,  # DE: Limousinen stabil / EN: Sedans stable
+            "Kleinwagen": 0.95  # DE: Kleinwagen weniger wertstabil / EN: Small cars hold less value
         }
         simulierter_wert *= karosserieform_faktoren.get(karosserieform, 1.0)
 
-        # Zustand: Kritischer Faktor
+        # DE: Zustand: Kritischer Faktor
+        # EN: Condition: Critical factor
         zustand_multiplikator = {
             1: 0.65, 2: 0.78, 3: 0.92, 4: 1.05, 5: 1.12
         }
         simulierter_wert *= zustand_multiplikator.get(zustand, 0.92)
 
-        # Marktfaktoren
+        # DE: Marktfaktoren
+        # EN: Market factors
         simulierter_wert *= elektropreis_faktor
         simulierter_wert *= nachfrage_faktor
 
-        # Marktschwankung
+        # DE: Marktschwankung
+        # EN: Market fluctuation
         marktschwankung = np.random.normal(0, neupreis * 0.02)
         simulierter_wert += marktschwankung
 
-        # Plausibilitätsgrenzen
+        # DE: Plausibilitätsgrenzen
+        # EN: Plausibility limits
         simulierter_wert = max(neupreis * 0.15, min(simulierter_wert, neupreis * 0.95))
 
         return round(simulierter_wert, 0)
@@ -169,13 +187,15 @@ def generate_realistic_ev_data_2025(num_samples=2000):
         karosserieform = model_info["Karosserieform"]
         wertverlust_faktor = model_info["Wertverlust_Faktor"]
 
-        # Realistische Altersverteilung
+        # DE: Realistische Altersverteilung
+        # EN: Realistic age distribution
         alter_gewichte = [40, 30, 20, 10]
         alter_bereiche = [(1, 12), (13, 24), (25, 36), (37, 60)]
         alter_bereich = random.choices(alter_bereiche, weights=alter_gewichte)[0]
         alter = random.randint(*alter_bereich)
 
-        # Laufleistung
+        # DE: Laufleistung
+        # EN: Mileage
         basis_laufleistung = alter * (12215 / 12)
         laufleistung_variation = np.random.normal(0, basis_laufleistung * 0.3)
         laufleistung = max(500, int(basis_laufleistung + laufleistung_variation))
@@ -204,7 +224,8 @@ def generate_realistic_ev_data_2025(num_samples=2000):
 
         wertverlust_prozent = round(((neupreis - historischer_preis) / neupreis) * 100, 1)
 
-        # Verkaufsdatum
+        # DE: Verkaufsdatum
+        # EN: Date of sale
         tage_gewichte = [50, 30, 15, 5]
         tage_bereiche = [(1, 90), (91, 365), (366, 730), (731, 1095)]
         tage_bereich = random.choices(tage_bereiche, weights=tage_gewichte)[0]
@@ -233,7 +254,10 @@ def generate_realistic_ev_data_2025(num_samples=2000):
     return df_simuliert
 
 def print_dataset_statistics_2025(df):
-    """Druckt erweiterte Statistiken für den 2025 Datensatz"""
+    """
+    DE: Druckt erweiterte Statistiken für den 2025 Datensatz
+    EN: Prints extended statistics for the 2025 dataset
+    """
     print("\n=== DATASET STATISTIKEN 2025 ===")
     print(f"Gesamtanzahl Datensätze: {len(df)}")
     print(f"Durchschnittlicher Wertverlust: {df['Wertverlust_Prozent'].mean():.1f}%")
@@ -261,19 +285,23 @@ def print_dataset_statistics_2025(df):
 if __name__ == "__main__":
     print("Generiere realistische EV-Restwertdaten 2025 mit aktualisierten Merkmalen...")
 
-    # Datensatz generieren
+    # DE: Datensatz generieren
+    # EN: Generate dataset
     simulated_df = generate_realistic_ev_data_2025(num_samples=2000)
 
-    # CSV speichern
+    # DE: CSV speichern
+    # EN: Save CSV
     csv_filename = "hyundai_ev_restwerte.csv"
     simulated_df.to_csv(csv_filename, index=False, encoding='utf-8')
 
     print(f"\n CSV-Datei '{csv_filename}' erfolgreich erstellt!")
 
-    # Erweiterte Statistiken anzeigen
+    # DE: Erweiterte Statistiken anzeigen
+    # EN: Show extended statistics
     print_dataset_statistics_2025(simulated_df)
 
-    # Beispieldaten anzeigen
+    # DE: Beispieldaten anzeigen
+    # EN: Show sample data
     print("\n=== BEISPIELDATEN (erste 3 Zeilen) ===")
     print(simulated_df.head(3).to_string())
 

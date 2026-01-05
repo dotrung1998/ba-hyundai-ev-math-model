@@ -2,13 +2,16 @@
 
 import pandas as pd
 import numpy as np
-import random # Neu hinzugefügt für die Simulation
+import random # DE: Neu hinzugefügt für die Simulation / EN: Newly added for simulation
 
 def load_and_select_data_interactive(csv_file):
     """
-    Lädt CSV, führt Benutzer durch die Auswahl eines EV-Modells und einer Variante
-    und gibt die ausgewählten Daten zurück.
-    Aktualisiert für 2025 Datenstruktur mit neuen Merkmalen.
+    DE: Lädt CSV, führt Benutzer durch die Auswahl eines EV-Modells und einer Variante
+        und gibt die ausgewählten Daten zurück.
+        Aktualisiert für 2025 Datenstruktur mit neuen Merkmalen.
+    EN: Loads CSV, guides user through selecting an EV model and variant,
+        and returns the selected data.
+        Updated for 2025 data structure with new features.
     """
     try:
         df = pd.read_csv(csv_file)
@@ -17,7 +20,8 @@ def load_and_select_data_interactive(csv_file):
         print("Bitte stellen Sie sicher, dass die 'hyundai_ev_restwerte_2025_aktualisiert.csv' im selben Verzeichnis liegt.")
         return None
 
-    # Marken auswählen
+    # DE: Marken auswählen
+    # EN: Select brands
     unique_brands = df["Marke"].unique().tolist()
     print("Verfügbare Marken:")
     for i, brand in enumerate(unique_brands):
@@ -35,7 +39,8 @@ def load_and_select_data_interactive(csv_file):
         except ValueError:
             print("Ungültige Eingabe. Bitte geben Sie eine Nummer ein.")
 
-    # Modelle innerhalb der gewählten Marke auswählen
+    # DE: Modelle innerhalb der gewählten Marke auswählen
+    # EN: Select models within the chosen brand
     models_in_brand = df[df["Marke"] == selected_brand]["Modell"].unique().tolist()
     print(f"\nVerfügbare Modelle für {selected_brand}:")
     for i, model in enumerate(models_in_brand):
@@ -53,7 +58,8 @@ def load_and_select_data_interactive(csv_file):
         except ValueError:
             print("Ungültige Eingabe. Bitte geben Sie eine Nummer ein.")
 
-    # Varianten innerhalb des gewählten Modells auswählen
+    # DE: Varianten innerhalb des gewählten Modells auswählen
+    # EN: Select variants within the chosen model
     variants_in_model = df[
         (df["Marke"] == selected_brand) & (df["Modell"] == selected_model)
     ]["Variante"].unique().tolist()
@@ -73,7 +79,8 @@ def load_and_select_data_interactive(csv_file):
         except ValueError:
             print("Ungültige Eingabe. Bitte geben Sie eine Nummer ein.")
 
-    # Endgültige Auswahl der spezifischen Zeile
+    # DE: Endgültige Auswahl der spezifischen Zeile
+    # EN: Final selection of the specific row
     selected_row = df[
         (df["Marke"] == selected_brand)
         & (df["Modell"] == selected_model)
@@ -81,18 +88,19 @@ def load_and_select_data_interactive(csv_file):
     ].iloc[0]
 
     return {
-        "initial_rv": selected_row["Neupreis_EUR"], # Anfänglicher Restwert (Neupreis)
-        "age_months": selected_row["Alter_Monate"], # Alter des Fahrzeugs
-        "true_residual_value_at_horizon": selected_row["Restwert_EUR"], # Tatsächlich beobachteter Restwert
+        "initial_rv": selected_row["Neupreis_EUR"], # DE: Anfänglicher Restwert (Neupreis) / EN: Initial residual value (New price)
+        "age_months": selected_row["Alter_Monate"], # DE: Alter des Fahrzeugs / EN: Vehicle age
+        "true_residual_value_at_horizon": selected_row["Restwert_EUR"], # DE: Tatsächlich beobachteter Restwert / EN: Actually observed residual value
         "selected_model_name": f"{selected_brand} {selected_model} {selected_variant}",
-        "full_row_data": selected_row # Die vollständige Zeile für CatBoost (enthält alle 2025 Features)
+        "full_row_data": selected_row # DE: Die vollständige Zeile für CatBoost (enthält alle 2025 Features) / EN: The full row for CatBoost (contains all 2025 features)
     }
 
 def choose_lease_term():
     """
-    Führt Benutzer durch die Auswahl einer Vertragslaufzeit.
+    DE: Führt Benutzer durch die Auswahl einer Vertragslaufzeit.
+    EN: Guides user through the selection of a lease term.
     """
-    available_lease_terms = [12, 24, 36, 48, 60] # Verfügbare Leasing-/Finanzierungslaufzeiten in Monaten
+    available_lease_terms = [12, 24, 36, 48, 60] # DE: Verfügbare Leasing-/Finanzierungslaufzeiten in Monaten / EN: Available lease/financing terms in months
     print("\n--- Verfügbare Vertragslaufzeiten (Monate) ---")
     for i, term in enumerate(available_lease_terms):
         print(f"{i+1}. {term} Monate")
@@ -112,33 +120,41 @@ def choose_lease_term():
 
 def generate_simulated_test_data(csv_file, num_samples=400):
     """
-    Generiert simulierte Testdaten, die einer echten Kreuzvalidierung ähneln würden.
-    Für die Demonstration des t-Tests, da keine vollständige Kreuzvalidierung
-    im aktuellen Workflow implementiert ist.
+    DE: Generiert simulierte Testdaten, die einer echten Kreuzvalidierung ähneln würden.
+        Für die Demonstration des t-Tests, da keine vollständige Kreuzvalidierung
+        im aktuellen Workflow implementiert ist.
+    EN: Generates simulated test data that would resemble a real cross-validation.
+        For the demonstration of the t-test, as no full cross-validation
+        is implemented in the current workflow.
     """
     df_full = pd.read_csv(csv_file)
 
     simulated_data = []
     for _ in range(num_samples):
-        # Zufällige Auswahl einer Zeile aus dem Datensatz
+        # DE: Zufällige Auswahl einer Zeile aus dem Datensatz
+        # EN: Random selection of a row from the dataset
         random_row = df_full.sample(n=1).iloc[0]
 
-        # Simuliere einen "tatsächlichen" Restwert für diese Simulation
-        # Füge etwas Rauschen hinzu, um realistischer zu sein
+        # DE: Simuliere einen "tatsächlichen" Restwert für diese Simulation
+        # EN: Simulate an "actual" residual value for this simulation
+        # DE: Füge etwas Rauschen hinzu, um realistischer zu sein
+        # EN: Add some noise to be more realistic
         actual_rv = random_row["Restwert_EUR"] + np.random.normal(0, random_row["Neupreis_EUR"] * 0.01)
-        actual_rv = max(0, actual_rv) # Restwert nicht negativ
+        actual_rv = max(0, actual_rv) # DE: Restwert nicht negativ / EN: Residual value not negative
 
-        # Simuliere Prognose des linearen Modells (mit erwarteter Abweichung)
+        # DE: Simuliere Prognose des linearen Modells (mit erwarteter Abweichung)
+        # EN: Simulate prediction of the linear model (with expected deviation)
         linear_pred = actual_rv * (1 + np.random.normal(0.083, 0.02)) # 8.3% MAPE Abweichung
 
-        # Simuliere Prognose des hybriden Modells (mit erwarteter Abweichung)
+        # DE: Simuliere Prognose des hybriden Modells (mit erwarteter Abweichung)
+        # EN: Simulate prediction of the hybrid model (with expected deviation)
         hybrid_pred = actual_rv * (1 + np.random.normal(0.0167, 0.005)) # 1.67% MAPE Abweichung
 
         simulated_data.append({
             'actual_rv': actual_rv,
             'linear_prediction': linear_pred,
             'hybrid_prediction': hybrid_pred,
-            'full_row_data': random_row # Für CatBoost Features, falls benötigt
+            'full_row_data': random_row # DE: Für CatBoost Features, falls benötigt / EN: For CatBoost features if needed
         })
     return simulated_data
 
