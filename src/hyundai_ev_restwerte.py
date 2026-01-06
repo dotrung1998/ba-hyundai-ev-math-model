@@ -23,9 +23,9 @@ def generate_realistic_ev_data_2025(num_samples=2000):
                 "Varianten": ["Standard Range 49kWh", "Long Range 65kWh"],
                 "Neupreise": [35990, 42990],
                 "Batterien": [49, 65],
-                "Spitzenleistung_kW": [99, 150],  # 133 HP and 201 HP [12][13]
-                "WLTP_Verbrauch_kWh_100km": [13.8, 13.4],  # Based on market data [20]
-                "WLTP_Reichweite_km": [320, 480],  # WLTP ranges [14]
+                "Spitzenleistung_kW": [99, 150], 
+                "WLTP_Verbrauch_kWh_100km": [13.8, 13.4],
+                "WLTP_Reichweite_km": [320, 480],
                 "Karosserieform": "SUV",
                 "Wertverlust_Faktor": 0.28
             },
@@ -33,9 +33,9 @@ def generate_realistic_ev_data_2025(num_samples=2000):
                 "Varianten": ["RWD 58kWh", "RWD 84kWh", "AWD 84kWh"],
                 "Neupreise": [47900, 52900, 57900],
                 "Batterien": [58, 84, 84],
-                "Spitzenleistung_kW": [125, 168, 239],  # 168 HP RWD, 320 HP AWD [2][5]
-                "WLTP_Verbrauch_kWh_100km": [16.8, 17.1, 18.2],  # Typical SUV consumption
-                "WLTP_Reichweite_km": [345, 490, 460],  # Up to 354 miles = 570km [3][4]
+                "Spitzenleistung_kW": [125, 168, 239],
+                "WLTP_Verbrauch_kWh_100km": [16.8, 17.1, 18.2],
+                "WLTP_Reichweite_km": [345, 490, 460],
                 "Karosserieform": "SUV",
                 "Wertverlust_Faktor": 0.248
             },
@@ -43,9 +43,9 @@ def generate_realistic_ev_data_2025(num_samples=2000):
                 "Varianten": ["Performance 84kWh"],
                 "Neupreise": [74900],
                 "Batterien": [84],
-                "Spitzenleistung_kW": [448],  # 601 HP with Boost [6]
-                "WLTP_Verbrauch_kWh_100km": [22.5],  # Performance model higher consumption
-                "WLTP_Reichweite_km": [355],  # 221 miles EPA ≈ 355 km [6]
+                "Spitzenleistung_kW": [448],
+                "WLTP_Verbrauch_kWh_100km": [22.5],
+                "WLTP_Reichweite_km": [355],
                 "Karosserieform": "SUV",
                 "Wertverlust_Faktor": 0.246
             },
@@ -53,9 +53,9 @@ def generate_realistic_ev_data_2025(num_samples=2000):
                 "Varianten": ["Standard Range 53kWh", "Long Range 77kWh"],
                 "Neupreise": [49900, 54900],
                 "Batterien": [53, 77],
-                "Spitzenleistung_kW": [111, 168],  # 149 HP and 228 HP [16][19]
-                "WLTP_Verbrauch_kWh_100km": [13.9, 14.3],  # Very efficient sedan [21]
-                "WLTP_Reichweite_km": [385, 540],  # 240 and 316 miles [16]
+                "Spitzenleistung_kW": [111, 168],
+                "WLTP_Verbrauch_kWh_100km": [13.9, 14.3],
+                "WLTP_Reichweite_km": [385, 540],
                 "Karosserieform": "Limousine",
                 "Wertverlust_Faktor": 0.26
             },
@@ -65,8 +65,8 @@ def generate_realistic_ev_data_2025(num_samples=2000):
     farben = ["Schwarz", "Weiß", "Blau", "Rot", "Grau", "Silber", "Grün", "Orange"]
     regionen = ["DE-Nord", "DE-Süd", "DE-Ost", "DE-West", "DE-Mitte"]
 
-    # DE: Marktfaktoren für Elektropreis basierend auf 2025 Prognosen [22][25]
-    # EN: Market factors for electricity price based on 2025 forecasts [22][25]
+    # DE: Marktfaktoren für Elektropreis basierend auf 2025 Prognosen
+    # EN: Market factors for electricity price based on 2025 forecasts
     marktfaktoren_elektropreis = {
         "niedrig": 1.05,    # DE: Niedrige Strompreise begünstigen EV-Nachfrage / EN: Low electricity prices favor EV demand
         "mittel": 1.0,      # Baseline
@@ -119,8 +119,8 @@ def generate_realistic_ev_data_2025(num_samples=2000):
         elif spitzenleistung_kw < 100:
             simulierter_wert -= 1000  # DE: Abzug für niedrige Leistung / EN: Deduction for low power
 
-        # DE: WLTP Energieverbrauch: Effizienz-Bonus/Malus [20][21]
-        # EN: WLTP Energy consumption: Efficiency Bonus/Malus [20][21]
+        # DE: WLTP Energieverbrauch: Effizienz-Bonus/Malus
+        # EN: WLTP Energy consumption: Efficiency Bonus/Malus
         if wltp_verbrauch < 14.0:  # DE: Sehr effizient / EN: Very efficient
             simulierter_wert += 1800
         elif wltp_verbrauch < 16.0:  # DE: Durchschnittlich effizient / EN: Average efficiency
@@ -128,8 +128,8 @@ def generate_realistic_ev_data_2025(num_samples=2000):
         elif wltp_verbrauch > 20.0:  # DE: Ineffizient / EN: Inefficient
             simulierter_wert -= 1200
 
-        # DE: WLTP Reichweite: Reichweiten-Premium [9]
-        # EN: WLTP Range: Range Premium [9]
+        # DE: WLTP Reichweite: Reichweiten-Premium
+        # EN: WLTP Range: Range Premium
         if wltp_reichweite > 500:  # DE: Über 500km = Premium / EN: Over 500km = Premium
             simulierter_wert += 2200
         elif wltp_reichweite > 400:  # DE: Über 400km = gut / EN: Over 400km = good
@@ -137,8 +137,8 @@ def generate_realistic_ev_data_2025(num_samples=2000):
         elif wltp_reichweite < 300:  # DE: Unter 300km = Abzug / EN: Under 300km = deduction
             simulierter_wert -= 1500
 
-        # DE: Karosserieform-Faktoren [23][24]
-        # EN: Body style factors [23][24]
+        # DE: Karosserieform-Faktoren
+        # EN: Body style factors
         karosserieform_faktoren = {
             "SUV": 1.08,        # DE: SUVs sind beliebt / EN: SUVs are popular
             "Limousine": 1.02,  # DE: Limousinen stabil / EN: Sedans stable
