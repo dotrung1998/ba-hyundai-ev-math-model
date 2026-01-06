@@ -21,47 +21,47 @@ def generate_realistic_ev_data_2025(num_samples=2000):
         "Hyundai": {
             "KONA Elektro": {
                 "Varianten": ["Standard Range 49kWh", "Long Range 65kWh"],
-                "Neupreise": [35990, 42990],
+                "Neupreise": [41990, 50490],  # Korrigierte Preise basierend auf Quelle HyundaiKONA2025
                 "Batterien": [49, 65],
-                "Spitzenleistung_kW": [99, 150], 
-                "WLTP_Verbrauch_kWh_100km": [13.8, 13.4],
-                "WLTP_Reichweite_km": [320, 480],
+                "Spitzenleistung_kW": [99, 150],  # 133 HP und 201 HP
+                "WLTP_Verbrauch_kWh_100km": [13.4, 13.8],  # Basierend auf Marktdaten
+                "WLTP_Reichweite_km": [350, 517],  # WLTP nach Hersteller
                 "Karosserieform": "SUV",
-                "Wertverlust_Faktor": 0.28
+                "Wertverlust_Faktor": 1.0  # Basis-Faktor
             },
             "IONIQ 5": {
                 "Varianten": ["RWD 58kWh", "RWD 84kWh", "AWD 84kWh"],
-                "Neupreise": [47900, 52900, 57900],
+                "Neupreise": [43900, 51900, 59400],  # EVSupply2025
                 "Batterien": [58, 84, 84],
-                "Spitzenleistung_kW": [125, 168, 239],
-                "WLTP_Verbrauch_kWh_100km": [16.8, 17.1, 18.2],
-                "WLTP_Reichweite_km": [345, 490, 460],
+                "Spitzenleistung_kW": [125, 168, 239],  # 168 HP RWD, 320 HP AWD
+                "WLTP_Verbrauch_kWh_100km": [16.8, 17.1, 18.2],  # SUV-typisch
+                "WLTP_Reichweite_km": [440, 490, 570],  # EVSupply2025
                 "Karosserieform": "SUV",
-                "Wertverlust_Faktor": 0.248
+                "Wertverlust_Faktor": 1.0
             },
             "IONIQ 5 N": {
                 "Varianten": ["Performance 84kWh"],
-                "Neupreise": [74900],
+                "Neupreise": [74900],  # HyundaiIONIQ5N2023
                 "Batterien": [84],
-                "Spitzenleistung_kW": [448],
-                "WLTP_Verbrauch_kWh_100km": [22.5],
-                "WLTP_Reichweite_km": [355],
+                "Spitzenleistung_kW": [448],  # 601 HP mit Boost
+                "WLTP_Verbrauch_kWh_100km": [21.2],  # HyundaiIONIQ5N2023
+                "WLTP_Reichweite_km": [448],  # HyundaiIONIQ5N2023
                 "Karosserieform": "SUV",
-                "Wertverlust_Faktor": 0.246
+                "Wertverlust_Faktor": 1.0
             },
             "IONIQ 6": {
                 "Varianten": ["Standard Range 53kWh", "Long Range 77kWh"],
-                "Neupreise": [49900, 54900],
+                "Neupreise": [43900, 60200],  # HyundaiIONIQ62025
                 "Batterien": [53, 77],
-                "Spitzenleistung_kW": [111, 168],
-                "WLTP_Verbrauch_kWh_100km": [13.9, 14.3],
-                "WLTP_Reichweite_km": [385, 540],
+                "Spitzenleistung_kW": [111, 168],  # 149 HP und 228 HP
+                "WLTP_Verbrauch_kWh_100km": [13.9, 14.3],  # GoElectra2025: IONIQ 6 = 13.9 (effizientestes)
+                "WLTP_Reichweite_km": [429, 614],  # HyundaiIONIQ62025
                 "Karosserieform": "Limousine",
-                "Wertverlust_Faktor": 0.26
-            },
+                "Wertverlust_Faktor": 1.0
+            }
         }
     }
-
+    
     farben = ["Schwarz", "Weiß", "Blau", "Rot", "Grau", "Silber", "Grün", "Orange"]
     regionen = ["DE-Nord", "DE-Süd", "DE-Ost", "DE-West", "DE-Mitte"]
 
@@ -99,9 +99,9 @@ def generate_realistic_ev_data_2025(num_samples=2000):
         basis_wertverlust = basis_wertverlust * wertverlust_faktor * 2
         simulierter_wert = neupreis * (1 - basis_wertverlust)
 
-        # DE: Laufleistungseffekt (EV-spezifisch: 12.215 km/Jahr Durchschnitt)
-        # EN: Mileage effect (EV-specific: 12,215 km/year average)
-        durchschnitt_km_pro_jahr = 12215
+        # DE: Laufleistungseffekt (EV-spezifisch: 13.000 km/Jahr Durchschnitt)
+        # EN: Mileage effect (EV-specific: 13.000 km/year average)
+        durchschnitt_km_pro_jahr = 13000
         erwartete_laufleistung = (alter_monate / 12) * durchschnitt_km_pro_jahr
         laufleistung_abweichung = laufleistung_km - erwartete_laufleistung
 
@@ -196,7 +196,7 @@ def generate_realistic_ev_data_2025(num_samples=2000):
 
         # DE: Laufleistung
         # EN: Mileage
-        basis_laufleistung = alter * (12215 / 12)
+        basis_laufleistung = alter * (13000 / 12)
         laufleistung_variation = np.random.normal(0, basis_laufleistung * 0.3)
         laufleistung = max(500, int(basis_laufleistung + laufleistung_variation))
 
