@@ -1,34 +1,34 @@
 # Hybrid EV Residual Value Prediction System
 
-A hybrid machine learning system combining Kalman filtering, Bayesian inference, and gradient boosting (CatBoost) to predict residual values of electric vehicles (EVs) with high accuracy. The system specifically focuses on Hyundai EV models and achieves significant improvements over traditional linear depreciation models.
+A hybrid machine learning system combining **Kalman filtering**, **Bayesian inference**, and **gradient boosting (CatBoost)** to predict residual values of electric vehicles (EVs) with high accuracy. The system specifically focuses on Hyundai EV models and achieves significant improvements over traditional linear depreciation models.
 
 ## Overview
 
 This project implements a three-stage prediction pipeline for electric vehicle residual values:
 
-1.  **Kalman Filter (State-Space Model)**: Provides baseline predictions using time-series state-space modeling with realistic EV depreciation curves (25% year 1, 18% year 2, 12% year 3+)
-2.  **Bayesian Inference**: Estimates uncertainty in depreciation rates using Metropolis-Hastings MCMC sampling
-3.  **CatBoost Regression**: Corrects residuals by incorporating technical EV specifications and market factors
+1.  **Kalman Filter (State-Space Model)**: Provides baseline predictions using time-series state-space modeling with realistic EV depreciation curves.
+2.  **Bayesian Inference**: Estimates uncertainty in depreciation rates using Metropolis-Hastings MCMC sampling.
+3.  **CatBoost Regression**: Corrects residuals by incorporating technical EV specifications and market factors.
 
-The hybrid approach reduces prediction error (MAPE) from 8.3% (linear model) to 2.84% (hybrid system), representing a ~66% improvement.
+The hybrid approach reduces prediction error (MAPE) from **8.3%** (linear model) to **2.84%** (hybrid system), representing a ~66% improvement.
 
 ## Features
 
--   **Realistic EV Depreciation Modeling**: Incorporates actual EV market depreciation patterns
--   **Technical Specifications**: Considers battery size, WLTP range, energy consumption, peak power
--   **Market Factors**: Accounts for electricity prices and EV demand fluctuations
--   **Interactive Selection**: User-friendly CLI for selecting vehicle models and lease terms
--   **Statistical Validation**: Includes paired t-tests demonstrating statistical significance
--   **Visualization**: Generates plots for predictions, confidence intervals, and feature importance
+-   **Realistic EV Depreciation Modeling**: Incorporates actual EV market depreciation patterns.
+-   **Technical Specifications**: Considers battery size, WLTP range, energy consumption, and peak power.
+-   **Market Factors**: Accounts for electricity prices and EV demand fluctuations.
+-   **Interactive Selection**: User-friendly CLI for selecting vehicle models and lease terms.
+-   **Statistical Validation**: Includes paired t-tests demonstrating statistical significance.
+-   **Visualization**: Generates plots for predictions, confidence intervals, and feature importance.
 
 ## Project Structure
 
--   **`main_portal_simulation.py`**: Main entry point orchestrating the complete prediction workflow
--   **`kalman_filter.py`**: Kalman filter implementation with Neusser (2016) state-space notation
--   **`bayessche_Inferenz.py`**: Bayesian inference module using Metropolis-Hastings algorithm
--   **`catboost_model.py`**: CatBoost regression model for residual correction
--   **`data_utils.py`**: Utility functions for data loading, selection, and test data generation
--   **`hyundai_ev_restwerte.py`**: Synthetic dataset generator for realistic EV residual values
+-   **`main_portal_simulation.py`**: Main entry point orchestrating the complete prediction workflow.
+-   **`kalman_filter.py`**: Kalman filter implementation (State-Space Model).
+-   **`bayessche_Inferenz.py`**: Bayesian inference module using Metropolis-Hastings algorithm.
+-   **`catboost_model.py`**: CatBoost regression model for residual correction.
+-   **`data_utils.py`**: Utility functions for data loading, selection, and test data generation.
+-   **`hyundai_ev_restwerte.py`**: Synthetic dataset generator for realistic EV residual values.
 
 ## Requirements
 
@@ -44,41 +44,26 @@ Follow these steps to run the project directly in your browser using GitHub Code
 
 ### Step 1: Fork the Repository
 
-This is the easiest way to copy the project to your own account so you can run and modify it.
-
-1. Log in to your GitHub account.
-2. Go to the original repository page.
-3. Look for the **Fork** button in the top-right corner of the page and click it.
-4. On the "Create a new fork" page, ensure your account is selected as the **Owner**.
-5. Click **Create fork**.
-    * *Result: You now have an exact copy of this project under your own account (e.g., `github.com/your-username/repo-name`).*
+1. Click the **Fork** button in the top-right corner of the repository page.
+2. Create the fork under your own account.
 
 ### Step 2: Launch Codespaces
 
-1. From **your forked repository** page:
-2. Click the green **Code** button.
-3. Select the **Codespaces** tab.
-4. Click **Create codespace on main**.
-5. Wait a few moments for the cloud environment to build and load VS Code in your browser.
+1. Click the green **Code** button on your forked repository.
+2. Select the **Codespaces** tab.
+3. Click **Create codespace on main**.
 
 ### Step 3: Install Extensions and Dependencies
 
-1. **Install Python Extension (Important):**
-    * Once inside Codespaces, look at the left sidebar and click on the **Extensions** icon (the four squares).
-    * Search for **"Python"**.
-    * Install the official extension named **Python** (by Microsoft).
-    * *Note: This ensures proper syntax highlighting and the ability to run Python files easily.*
-2. **Install Python Libraries:**
-    * Open the terminal (Terminal -> New Terminal).
-    * Run the following command to install required libraries:
+1. Install the **Python** extension by Microsoft from the Extensions sidebar.
+2. Open the terminal and run:
+
 ```bash
 pip install pandas numpy scipy matplotlib seaborn catboost
 ```
 
 
 ### Step 4: Generate Data \& Run
-
-Now you are ready to run the simulation.
 
 1. **Generate the dataset:**
 
@@ -87,228 +72,81 @@ python src/hyundai_ev_restwerte.py
 ```
 
 *This creates `hyundai_ev_restwerte.csv` containing the sample data.*
+
 2. **Run the prediction pipeline:**
 
 ```bash
 python src/main_portal_simulation.py
 ```
 
-**Outputs \& Results:**
-After the code finishes running, check your project directory (file explorer on the left). You will see two new folders created automatically:
-    * **`plots/`**: This folder contains all the visualization images (PNG files) generated by the Python script (e.g., residual value curves, feature importance charts, statistical comparisons).
-    * **`catboost_info/`**: This folder contains the training logs, metadata, and temporary files automatically generated by the CatBoost model during the training process.
 
-## Usage Details
+**Outputs:**
 
-When you run `python src/main_portal_simulation.py`, the system will:
-
-1. **Train the CatBoost model offline**: It processes historical data to learn market patterns.
-2. **Interactive Selection**:
-    * Prompt you to select a vehicle brand (e.g., Hyundai).
-    * Prompt for a model (e.g., IONIQ 5).
-    * Prompt for a specific variant (e.g., RWD 84kWh).
-3. **Lease Term**: Ask for lease term duration (12/24/36/48/60 months).
-4. **Process**:
-    * Run Kalman filter prediction.
-    * Perform Bayesian inference.
-    * Apply CatBoost residual correction.
-5. **Results**:
-    * Display final predictions with confidence intervals.
-    * Show statistical validation results comparing the Hybrid model vs. Linear model.
-
-### Running Individual Components
-
-**Kalman Filter only:**
-
-```python
-from kalman_filter import run_kalman_filter
-from data_utils import load_and_select_data_interactive, choose_lease_term
-
-selected_data = load_and_select_data_interactive("hyundai_ev_restwerte.csv")
-lease_term = choose_lease_term()
-results = run_kalman_filter(selected_data, lease_term)
-```
-
-**Bayesian Inference only:**
-
-```python
-from bayessche_Inferenz import run_bayesian_inference
-from data_utils import load_and_select_data_interactive
-
-selected_data = load_and_select_data_interactive("hyundai_ev_restwerte.csv")
-bayesian_results = run_bayesian_inference(selected_data)
-```
+- **`plots/`**: Contains visualization images (residual value curves, feature importance charts).
+- **`catboost_info/`**: Contains training logs from the CatBoost model.
 
 
 ## Technical Details
 
-### Kalman Filter (kalman_filter.py)
+### Kalman Filter
 
-Implements a linear state-space model:
+Implements a linear state-space model based on Neusser (2016):
 
 - **State vector**: [residual_value, depreciation_rate]
-- **System matrices**: Following Neusser (2016) notation with F, A, G matrices
-- **Noise parameters**: Tuned for EV market volatility (Q, R matrices)
-- **Depreciation curve**: Non-linear step function (25%/18%/12% yearly)
+- **Depreciation curve**: Non-linear step function (approx. 25% year 1, 15% year 2, 10% year 3+).
 
 
-### Bayesian Inference (bayessche_Inferenz.py)
+### Bayesian Inference
 
-- **Prior**: Normal distribution based on expected EV depreciation rates
-- **Likelihood**: Gaussian observation model with σ=750 EUR
-- **Posterior sampling**: Metropolis-Hastings with 50,000 iterations
-- **Burn-in**: 20% of samples discarded, thinning factor of 10
-
-
-### CatBoost Model (catboost_model.py)
-
-**Features (14 total):**
-
-- Categorical: Brand, Model, Variant, Body type, Color, Region, Electricity price factor, EV demand factor
-- Numerical: Mileage, Battery size, Peak power, WLTP consumption, WLTP range, Condition (1-5 scale)
-
-**Hyperparameters:**
-
-- Iterations: 1200
-- Learning rate: 0.04
-- Depth: 9
-- Loss function: RMSE
+- **Method**: Metropolis-Hastings MCMC sampling.
+- **Iterations**: 50,000 (with burn-in and thinning).
+- **Goal**: Quantify the uncertainty of the depreciation rate parameter $\beta$.
 
 
-### Dataset (hyundai_ev_restwerte.py)
+### CatBoost Model
 
-**Realistic depreciation simulation:**
-
-- Year 1: 25% depreciation
-- Year 2: 18% depreciation (of remaining value)
-- Year 3+: 12% depreciation (of remaining value)
-
-**Adjustments for:**
-
-- Mileage deviation from 12,215 km/year average
-- High performance bonus (>200 kW)
-- Efficiency bonus (WLTP <14 kWh/100km)
-- Range premium (>500 km)
-- Body type preferences (SUV 8% premium)
-- Condition rating (1-5 scale: 0.65x - 1.12x multiplier)
-- Market factors (electricity price, EV demand)
+- **Features**: 14 total (Brand, Model, Variant, Battery, Mileage, Region, etc.).
+- **Configuration**: Depth 9, Learning rate 0.04, Loss function RMSE.
+- **Purpose**: Captures non-linear dependencies that the Kalman filter misses.
 
 
-## Performance Metrics
+## References \& Data Sources
 
-Based on 400 simulated test cases:
+### Core Methodologies \& Algorithms
 
-
-| Model | MAPE | RMSE |
-| :-- | :-- | :-- |
-| Linear Depreciation | 8.30% | ~3,200 EUR |
-| Hybrid System | 2.84% | ~1,100 EUR |
-| **Improvement** | **65.8%** | **65.6%** |
-
-Statistical significance: p < 0.001 (paired t-test)
-
-## Output Examples
-
-**Kalman Filter Prediction:**
-
-```
-Vehicle: Hyundai IONIQ 5 RWD 84kWh
-Lease term: 36 months
-Initial price: 52,900 EUR
-Predicted residual value: 38,450 EUR ± 1,200 EUR
-Depreciation: 27.3%
-```
-
-**CatBoost Correction:**
-
-```
-Baseline (Kalman): 38,450 EUR
-CatBoost adjustment: +850 EUR
-Final prediction: 39,300 EUR
-```
-
-**Top Feature Importances:**
-
-1. WLTP Range (km)
-2. Battery Size (kWh)
-3. Mileage (km)
-4. Peak Power (kW)
-5. Electricity Price Factor
-
-## Data Format
-
-Expected CSV structure (`hyundai_ev_restwerte.csv`):
-
-
-| Column | Type | Description |
-| :-- | :-- | :-- |
-| FahrzeugID | int | Vehicle ID |
-| Marke | str | Brand (e.g., "Hyundai") |
-| Modell | str | Model (e.g., "IONIQ 5") |
-| Variante | str | Variant (e.g., "RWD 84kWh") |
-| Neupreis_EUR | float | New price in EUR |
-| Alter_Monate | int | Age in months |
-| Laufleistung_km | int | Mileage in km |
-| Batteriegroesse_kWh | float | Battery capacity in kWh |
-| Karosserieform | str | Body type (SUV, Limousine) |
-| Spitzenleistung_kW | float | Peak power in kW |
-| WLTP_Energieverbrauch_kWh_100km | float | WLTP consumption |
-| WLTP_Elektrische_Reichweite_km | int | WLTP range in km |
-| Farbe | str | Color |
-| Region | str | Region (e.g., "DE-Nord") |
-| Zustand_Skala_1_5 | int | Condition (1-5) |
-| Restwert_EUR | float | Residual value in EUR |
-| Wertverlust_Prozent | float | Depreciation % |
-| Datum_Verkauf | str | Sale date (YYYY-MM-DD) |
-| Marktfaktor_Elektropreis | str | Electricity price level |
-| Marktfaktor_EVNachfrage | str | EV demand level |
-
-## References
-
-### Core Methodologies
-
-**State-Space Models and Kalman Filtering:**
-
-- Neusser, K. (2016). *Time Series Econometrics* (2nd ed.). Springer Texts in Business and Economics. ISBN 978-3-031-88838-0.
-- Kalman, R. E. (1960). A new approach to linear filtering and prediction problems. *Transactions of the ASME--Journal of Basic Engineering*, 82(Series D), 35-45.
-
-**Bayesian Inference:**
-
-- Hastings, W. K. (1970). Monte Carlo sampling methods using Markov chains and their applications. *Biometrika*, 57(1), 97-109.
-- Chib, S., \& Greenberg, E. (1995). Understanding the Metropolis-Hastings Algorithm. *The American Statistician*, 49(4), 327-335.
-- Gelman, A., Carlin, J., Stern, H., Dunson, D., Vehtari, A., \& Rubin, D. (2003). *Bayesian Data Analysis* (3rd ed.). CRC Press.
-
-**Gradient Boosting and CatBoost:**
-
-- Prokhorenkova, L., Gusev, G., Vorobev, A., Dorogush, A. V., \& Gulin, A. (2018). CatBoost: unbiased boosting with categorical features. *Advances in Neural Information Processing Systems*, 31, 6638-6648.
-- Friedman, J. H. (2002). Stochastic gradient boosting. *Computational Statistics and Data Analysis*, 38(4), 367-378.
+* **Neusser, K. (2016).** *Time Series Econometrics* (2nd ed.). Springer.
+* **Kalman, R. E. (1960).** A new approach to linear filtering and prediction problems. *Transactions of the ASME--Journal of Basic Engineering*.
+* **Hastings, W. K. (1970).** Monte Carlo sampling methods using Markov chains. *Biometrika*.
+* **Chib, S., \& Greenberg, E. (1995).** Understanding the Metropolis-Hastings Algorithm. *The American Statistician*.
+* **Gelman, A., et al. (2003).** *Bayesian Data Analysis* (3rd ed.). CRC Press.
+* **Prokhorenkova, L., et al. (2018).** CatBoost: unbiased boosting with categorical features. *NeurIPS*.
+* **Friedman, J. H. (2002).** Stochastic gradient boosting. *Computational Statistics and Data Analysis*.
 
 
 ### Statistical Validation
 
-**Forecast Accuracy Metrics:**
-
-- Hyndman, R. J., \& Koehler, A. B. (2006). Another look at measures of forecast accuracy. *International Journal of Forecasting*, 22(4), 679-688.
-- Chai, T., \& Draxler, R. R. (2014). Root mean square error (RMSE) or mean absolute error (MAE)?--Arguments against avoiding RMSE in the literature. *Geoscientific Model Development*, 7(3), 1247-1250.
-
-**Hypothesis Testing:**
-
-- Kim, T. K. (2015). T-test as a parametric statistic. *Korean Journal of Anesthesiology*, 68(6), 540-546.
-- Shier, R. (2004). *Paired t-tests*. Retrieved from [https://www.statstutor.ac.uk/resources/uploaded/paired-t-test.pdf](https://www.statstutor.ac.uk/resources/uploaded/paired-t-test.pdf)
-- Cohen, J. (1988). *Statistical power analysis for the behavioral sciences* (2nd ed.). Lawrence Erlbaum Associates.
+* **Hyndman, R. J., \& Koehler, A. B. (2006).** Another look at measures of forecast accuracy. *International Journal of Forecasting*.
+* **Chai, T., \& Draxler, R. R. (2014).** Root mean square error (RMSE) or mean absolute error (MAE)? *Geoscientific Model Development*.
+* **Shier, R. (2004).** *Paired t-tests*. Statstutor.
+* **Kim, T. K. (2015).** T-test as a parametric statistic. *Korean Journal of Anesthesiology*.
 
 
-### Market Data and Context
+### Market Data \& EV Context
 
-**EV Market Trends:**
+* **Clean Energy Wire (2025).** *Germany reports a 27 percent drop in electric car sales in 2024*.
+* **Mobility Portal EU (2025).** *EV sales in Germany plummeted by 27%*.
+* **MDPI Applied Sciences (2025).** *Renewable Energy and Price Stability*.
+* **eCarsTrade (2025).** *EV Depreciation Rate - Do Electric cars hold their value?*
+* **DAT / ADAC (2025).** *Elektroauto gebraucht kaufen: Darauf sollten Sie achten - Restwertanalyse*.
+* **AADA (2025).** *Automotive Insights Report: Electric Vehicle Depreciation Analysis*.
 
-- Clean Energy Wire. (2025). Germany reports a 27 percent drop in electric car sales in 2024. Retrieved from [https://energynews.pro/en/germany-reports-a-27-percent-drop-in-electric-car-sales-in-2024/](https://energynews.pro/en/germany-reports-a-27-percent-drop-in-electric-car-sales-in-2024/)
-- Mobility Portal EU. (2025). EV sales in Germany plummeted by 27%: Is it time for a new approach? Retrieved from [https://mobilityportal.eu/ev-sales-in-germany-plummeted](https://mobilityportal.eu/ev-sales-in-germany-plummeted)
 
-**EV Depreciation Studies:**
+### Hyundai Vehicle Specifications
 
-- eCarsTrade. (2025). EV Depreciation Rate - Do Electric cars hold their value? Retrieved from [https://ecarstrade.com/blog/ev-depreciation-rate-do-electric-cars-hold-value/](https://ecarstrade.com/blog/ev-depreciation-rate-do-electric-cars-hold-value/)
-- We Buy Any Car. (2024). Electric car depreciation: An in-depth guide. Retrieved from [https://www.webuyanycar.com/electric-cars/ev-depreciation](https://www.webuyanycar.com/electric-cars/ev-depreciation)
+* **Hyundai Motor Deutschland (2025).** *KONA Elektro | Technische Daten und Preise*.
+* **EV Supply (2025).** *Hyundai IONIQ 5 (2025): Preise, Ausstattung \& Pakete*.
+* **Hyundai Motor Deutschland (2025).** *IONIQ 6 Varianten \& Preise*.
+* **Hyundai Motor Deutschland (2023).** *Neuer Hyundai IONIQ 5 N startet ab 74.900 Euro*.
 
 
 ## License
